@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="id"><head><meta charset="utf-8">
+<html lang="id" class="terkunci"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Undangan Ibadat Syukur 40 Hari – Thitus Bureni, S.H., M.Hum.</title>
 <meta name="description" content="Undangan Ibadat Syukur 40 Hari mengenang Thitus Bureni, S.H., M.Hum. – Senin, 14 Desember 2026, pukul 17.00 WITA.">
@@ -107,6 +107,23 @@ footer .hormat{font-style:italic;font-size:21px;color:var(--gold-l);margin-botto
 @media (prefers-reduced-motion:no-preference){#musik[aria-pressed="true"]::after{animation:denyut 2.4s ease-in-out infinite}@keyframes denyut{0%,100%{opacity:.2;transform:scale(1)}50%{opacity:.8;transform:scale(1.08)}}}
 @media print{#musik,#petunjuk{display:none!important}}
 
+/* ---------- Sampul pembuka ---------- */
+#buka{position:fixed;inset:0;z-index:60;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;padding:32px 28px calc(32px + env(safe-area-inset-bottom,0px));background:radial-gradient(120% 80% at 50% 0%,#24325a 0%,var(--navy) 55%,var(--navy2) 100%);color:#f4efe2;transition:opacity .9s ease,visibility .9s}
+#buka::before{content:"";position:absolute;inset:14px;border:1px solid rgba(205,176,114,.55);pointer-events:none}
+#buka::after{content:"";position:absolute;inset:20px;border:1px solid rgba(205,176,114,.22);pointer-events:none}
+#buka.tutup{opacity:0;visibility:hidden;pointer-events:none}
+#buka .cross{margin-bottom:26px}
+#buka .u{font-style:italic;font-size:20px;color:#cdd1dc}
+#buka h2{font-size:clamp(34px,9vw,50px);color:#fbf6e8;margin:8px 0 26px;line-height:1.12}
+#buka .n{font-size:clamp(24px,6vw,30px);font-weight:600;color:#fbf6e8;line-height:1.25}
+#buka .t{font-size:19px;color:var(--gold-l);margin-top:6px}
+#buka .btn{margin-top:40px;background:transparent;color:#f7f1e1;border:1px solid var(--gold-l);cursor:pointer;padding:14px 34px;font-size:20px}
+#buka .btn:hover{background:var(--gold-l);color:var(--navy)}
+#buka .btn:focus-visible{outline:none;box-shadow:0 0 0 3px rgba(205,176,114,.55)}
+html.terkunci,html.terkunci body{overflow:hidden}
+@media (prefers-reduced-motion:reduce){#buka{transition:none}}
+@media print{#buka{display:none!important}}
+
 /* ---------- Gerak (sekali, saat dibuka) ---------- */
 @media (prefers-reduced-motion:no-preference){
  .hero>*{animation:muncul 1s ease both}
@@ -126,6 +143,15 @@ footer .hormat{font-style:italic;font-size:21px;color:var(--gold-l);margin-botto
  .hero,footer{-webkit-print-color-adjust:exact;print-color-adjust:exact}
 }
 </style></head><body>
+<div id="buka" role="dialog" aria-modal="true" aria-label="Sampul undangan">
+  <svg class="cross" aria-hidden="true"><use href="#salib"/></svg>
+  <p class="u">Undangan</p>
+  <h2>Ibadat Syukur<br>40 Hari</h2>
+  <p class="n">Thitus Bureni, <span class="nb">S.H., M.Hum.</span></p>
+  <p class="t">Senin, 14 Desember 2026</p>
+  <button id="bukaBtn" class="btn" type="button">Buka undangan</button>
+</div>
+<noscript><style>#buka{display:none!important}html.terkunci,html.terkunci body{overflow:auto}</style></noscript>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
  <symbol id="salib" viewBox="0 0 26 38"><path d="M11 0h4v11h11v4H15v23h-4V15H0v-4h11z" fill="currentColor"/></symbol>
  <symbol id="ik-kalender" viewBox="0 0 48 48"><rect x="5" y="9" width="38" height="34" rx="3" fill="none" stroke="currentColor" stroke-width="3"/><path d="M5 19h38" stroke="currentColor" stroke-width="3"/><path d="M14 4v10M34 4v10" stroke="currentColor" stroke-width="3.4" stroke-linecap="round"/><g fill="currentColor"><rect x="11" y="24" width="5" height="4.5" rx=".8"/><rect x="19" y="24" width="5" height="4.5" rx=".8"/><rect x="27" y="24" width="5" height="4.5" rx=".8"/><rect x="11" y="32" width="5" height="4.5" rx=".8"/><rect x="19" y="32" width="5" height="4.5" rx=".8"/><rect x="27" y="32" width="5" height="4.5" rx=".8"/></g></symbol>
@@ -237,15 +263,19 @@ document.addEventListener('keydown',function(e){if(!lb.classList.contains('on'))
 var sx=null;lb.addEventListener('touchstart',function(e){sx=e.touches[0].clientX},{passive:true});
 lb.addEventListener('touchend',function(e){if(sx===null)return;var d=e.changedTouches[0].clientX-sx;if(Math.abs(d)>50)show(cur+(d<0?1:-1));sx=null});
 
-var mus=document.getElementById('mus'),mb=document.getElementById('musik'),pt=document.getElementById('petunjuk');
+var mus=document.getElementById('mus'),mb=document.getElementById('musik'),pt=document.getElementById('petunjuk'),cv=document.getElementById('buka'),cb=document.getElementById('bukaBtn'),H=document.documentElement,sudahBuka=false;
 mus.volume=.6;
-mus.addEventListener('loadedmetadata',function(){mb.classList.add('siap');pt.classList.add('on');setTimeout(function(){pt.classList.remove('on')},6000)});
-mus.addEventListener('error',function(){mb.classList.remove('siap');pt.classList.remove('on')});
+function lepas(){H.classList.remove('terkunci');cv.classList.add('tutup');setTimeout(function(){cv.style.display='none'},1000)}
 function setMus(on){mb.setAttribute('aria-pressed',on?'true':'false');mb.setAttribute('aria-label',on?'Jeda musik latar':'Putar musik latar')}
-mb.onclick=function(){pt.classList.remove('on');
- if(mus.paused){var p=mus.play();if(p&&p.then)p.then(function(){setMus(true)},function(){setMus(false)});else setMus(true)}
- else{mus.pause();setMus(false)}};
+mus.addEventListener('loadedmetadata',function(){mb.classList.add('siap');if(sudahBuka&&mus.paused){pt.classList.add('on');setTimeout(function(){pt.classList.remove('on')},6000)}});
+mus.addEventListener('error',function(){mb.classList.remove('siap');pt.classList.remove('on');if(!sudahBuka)lepas()});
 mus.addEventListener('pause',function(){setMus(false)});
 mus.addEventListener('play',function(){setMus(true)});
+cb.onclick=function(){sudahBuka=true;var p=mus.play();if(p&&p.catch)p.catch(function(){});lepas()};
+setTimeout(function(){if(!sudahBuka&&mus.readyState===0)lepas()},3500);
+mb.onclick=function(){pt.classList.remove('on');
+ if(mus.paused){var p=mus.play();if(p&&p.then)p.then(function(){setMus(true)},function(){setMus(false)})}
+ else{mus.pause();setMus(false)}};
+cb.focus();
 </script>
 </body></html>
