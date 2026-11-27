@@ -13,6 +13,7 @@ box-sizing:border-box}
 html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
 body{margin:0;background:var(--navy2);color:var(--ink);font-family:var(--serif);font-size:21px;line-height:1.65;text-align:center;-webkit-font-smoothing:antialiased}
 .sheet{max-width:720px;margin:0 auto;background:var(--ivory);box-shadow:0 0 60px rgba(0,0,0,.35)}
+[hidden]{display:none!important}
 p{margin:0;text-wrap:balance}
 .nb{white-space:nowrap}
 
@@ -63,6 +64,17 @@ section{padding:56px 34px}
  .btn{padding:13px 20px;font-size:18px;letter-spacing:.01em}
  .gr{height:1px;width:100%;align-self:auto;background:linear-gradient(to right,transparent,var(--gold) 15%,var(--gold) 85%,transparent)}
 }
+
+/* ---------- Hitung mundur ---------- */
+.hitung{padding-top:48px;padding-bottom:52px}
+.hitung h2{font-size:28px;margin:14px 0 24px}
+.cd{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));max-width:460px;margin:0 auto}
+.cd div{padding:4px 0;position:relative}
+.cd div+div::before{content:"";position:absolute;left:0;top:12%;bottom:12%;width:1px;background:linear-gradient(to bottom,transparent,var(--gold) 20%,var(--gold) 80%,transparent)}
+.cd b{display:block;font-weight:600;font-size:clamp(40px,11vw,60px);line-height:1.05;color:var(--navy);font-variant-numeric:tabular-nums lining-nums}
+.cd span{display:block;font-size:18px;font-style:italic;color:var(--soft);margin-top:2px}
+.cd-info{font-size:23px;font-weight:600;color:var(--navy);max-width:460px;margin:0 auto;line-height:1.45;text-wrap:balance}
+.cd-info small{display:block;font-size:19px;font-weight:400;font-style:italic;color:var(--soft);margin-top:6px}
 
 /* ---------- Galeri ---------- */
 .galeri{background:var(--paper);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
@@ -206,6 +218,18 @@ html.terkunci,html.terkunci body{overflow:hidden}
   </div>
   </section>
 
+<section class="hitung" id="hitung" hidden>
+  <svg class="orn" aria-hidden="true"><use href="#orn"/></svg>
+  <h2 id="cdJudul">Menuju Hari Pelaksanaan</h2>
+  <div class="cd" id="cd" role="timer" aria-live="off">
+    <div><b id="cdH">00</b><span>Hari</span></div>
+    <div><b id="cdJ">00</b><span>Jam</span></div>
+    <div><b id="cdM">00</b><span>Menit</span></div>
+    <div><b id="cdD">00</b><span>Detik</span></div>
+  </div>
+  <p class="cd-info" id="cdInfo" hidden></p>
+</section>
+
 <section class="galeri">
   <svg class="orn" aria-hidden="true"><use href="#orn"/></svg>
   <h2>Galeri Keluarga</h2>
@@ -277,5 +301,29 @@ mb.onclick=function(){pt.classList.remove('on');
  if(mus.paused){var p=mus.play();if(p&&p.then)p.then(function(){setMus(true)},function(){setMus(false)})}
  else{mus.pause();setMus(false)}};
 cb.focus();
+
+(function(){
+ var TARGET=Date.parse('2026-12-14T17:00:00+08:00'),SELESAI=TARGET+3*3600*1000;
+ var sec=document.getElementById('hitung');if(!sec)return;
+ var cd=document.getElementById('cd'),info=document.getElementById('cdInfo'),jd=document.getElementById('cdJudul');
+ var el={h:document.getElementById('cdH'),j:document.getElementById('cdJ'),m:document.getElementById('cdM'),d:document.getElementById('cdD')};
+ function p(n){return n<10?'0'+n:''+n}
+ function tampil(){
+  var now=Date.now(),sisa=TARGET-now;
+  sec.hidden=false;
+  if(sisa>0){
+   cd.hidden=false;info.hidden=true;jd.textContent='Menuju Hari Pelaksanaan';
+   var s=Math.floor(sisa/1000);
+   el.h.textContent=p(Math.floor(s/86400));el.j.textContent=p(Math.floor(s%86400/3600));
+   el.m.textContent=p(Math.floor(s%3600/60));el.d.textContent=p(s%60);
+  }else{
+   cd.hidden=true;info.hidden=false;
+   if(now<SELESAI){jd.textContent='Hari Ini';info.textContent='Ibadat Syukur sedang berlangsung.'}
+   else{jd.textContent='Terima Kasih';info.innerHTML='Ibadat Syukur telah dilaksanakan.<small>Terima kasih atas doa dan kehadiran Bapak/Ibu/Saudara(i).</small>'}
+   clearInterval(iv);
+  }
+ }
+ var iv=setInterval(tampil,1000);tampil();
+})();
 </script>
 </body></html>
