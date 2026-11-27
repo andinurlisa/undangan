@@ -93,6 +93,20 @@ footer .hormat{font-style:italic;font-size:21px;color:var(--gold-l);margin-botto
 #pv{left:2px}#nx{right:2px}
 #ct{position:absolute;bottom:calc(16px + env(safe-area-inset-bottom,0px));left:0;right:0;font-size:17px;color:#cdd1dc;letter-spacing:.08em}
 
+/* ---------- Musik latar ---------- */
+#musik{position:fixed;right:16px;bottom:calc(18px + env(safe-area-inset-bottom,0px));z-index:30;width:52px;height:52px;border-radius:50%;border:1px solid var(--gold-l);background:var(--navy);color:var(--gold-l);cursor:pointer;display:none;align-items:center;justify-content:center;box-shadow:0 6px 20px rgba(0,0,0,.35);padding:0;font-family:var(--serif)}
+#musik.siap{display:flex}
+#musik svg{width:24px;height:24px}
+#musik .jeda{display:none}
+#musik[aria-pressed="true"] .main{display:none}
+#musik[aria-pressed="true"] .jeda{display:block}
+#musik:focus-visible{outline:3px solid var(--gold-l);outline-offset:3px}
+#musik[aria-pressed="true"]::after{content:"";position:absolute;inset:-6px;border-radius:50%;border:1px solid rgba(205,176,114,.5)}
+#petunjuk{position:fixed;right:78px;bottom:calc(28px + env(safe-area-inset-bottom,0px));z-index:30;background:var(--navy);color:#f4efe2;border:1px solid var(--gold-l);padding:7px 14px;font-size:17px;font-style:italic;display:none;white-space:nowrap}
+#petunjuk.on{display:block}
+@media (prefers-reduced-motion:no-preference){#musik[aria-pressed="true"]::after{animation:denyut 2.4s ease-in-out infinite}@keyframes denyut{0%,100%{opacity:.2;transform:scale(1)}50%{opacity:.8;transform:scale(1.08)}}}
+@media print{#musik,#petunjuk{display:none!important}}
+
 /* ---------- Gerak (sekali, saat dibuka) ---------- */
 @media (prefers-reduced-motion:no-preference){
  .hero>*{animation:muncul 1s ease both}
@@ -191,6 +205,14 @@ footer .hormat{font-style:italic;font-size:21px;color:var(--gold-l);margin-botto
 </footer>
 </div>
 
+
+<audio id="mus" src="musik.mp3" loop preload="metadata"></audio>
+<button id="musik" type="button" aria-pressed="false" aria-label="Putar musik latar">
+  <svg class="main" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18V6l11-2v12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><circle cx="6.5" cy="18" r="2.8" fill="currentColor"/><circle cx="17.5" cy="16" r="2.8" fill="currentColor"/></svg>
+  <svg class="jeda" viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="5" width="4" height="14" rx="1" fill="currentColor"/><rect x="14" y="5" width="4" height="14" rx="1" fill="currentColor"/></svg>
+</button>
+<div id="petunjuk" aria-hidden="true">Putar musik</div>
+
 <div id="lb" role="dialog" aria-modal="true" aria-label="Foto diperbesar">
   <button id="x" aria-label="Tutup">×</button>
   <button id="pv" aria-label="Foto sebelumnya">‹</button>
@@ -214,5 +236,16 @@ document.addEventListener('keydown',function(e){if(!lb.classList.contains('on'))
  if(e.key==='Escape')tutup();else if(e.key==='ArrowLeft')show(cur-1);else if(e.key==='ArrowRight')show(cur+1)});
 var sx=null;lb.addEventListener('touchstart',function(e){sx=e.touches[0].clientX},{passive:true});
 lb.addEventListener('touchend',function(e){if(sx===null)return;var d=e.changedTouches[0].clientX-sx;if(Math.abs(d)>50)show(cur+(d<0?1:-1));sx=null});
+
+var mus=document.getElementById('mus'),mb=document.getElementById('musik'),pt=document.getElementById('petunjuk');
+mus.volume=.6;
+mus.addEventListener('loadedmetadata',function(){mb.classList.add('siap');pt.classList.add('on');setTimeout(function(){pt.classList.remove('on')},6000)});
+mus.addEventListener('error',function(){mb.classList.remove('siap');pt.classList.remove('on')});
+function setMus(on){mb.setAttribute('aria-pressed',on?'true':'false');mb.setAttribute('aria-label',on?'Jeda musik latar':'Putar musik latar')}
+mb.onclick=function(){pt.classList.remove('on');
+ if(mus.paused){var p=mus.play();if(p&&p.then)p.then(function(){setMus(true)},function(){setMus(false)});else setMus(true)}
+ else{mus.pause();setMus(false)}};
+mus.addEventListener('pause',function(){setMus(false)});
+mus.addEventListener('play',function(){setMus(true)});
 </script>
 </body></html>
